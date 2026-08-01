@@ -1,0 +1,18 @@
+fastapi>=0.100.0
+uvicorn>=0.23.0
+python-multipart>=0.0.9
+pydantic>=2.0.0
+supabase>=2.0.0
+pinecone-client[grpc]>=3.0.0
+playwright>=1.35.0
+numpy>=1.20.0
+python-dotenv>=1.0.0
+google-genai>=0.2.0
+
+stripe>=8.0.0
+
+# WhatsApp Business Calling <-> Vapi мост (wa/call_bridge.py)
+httpx>=0.24.0
+websockets>=12.0
+aiortc>=1.6.0
+av>=11.0.0

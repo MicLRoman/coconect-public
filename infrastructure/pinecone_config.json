@@ -1,0 +1,8 @@
+{
+    "index_name": "rich-users",
+    "dimension": 768,
+    "metric": "cosine",
+    "cloud": "aws",
+    "region": "us-east-1",
+    "description": "Index for storing Gemini text-embedding-004 vectors representing user skills (Give) and queries (Ask)"
+}

@@ -1,0 +1,41 @@
+# --- секреты: НИКОГДА не коммитить ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+session.json          # куки LinkedIn
+credentials*.json
+secrets*.json
+
+# --- логи и дампы (могут содержать токены и телефоны) ---
+*.log
+*.txt.log
+last_linkedin.json
+report.html
+
+# --- персональные данные / выгрузки профилей ---
+ai-engine/test/cache/
+ai-engine/test/users.json
+ai-engine/test/profiles_for_llm.json
+ai-engine/test/asks.json
+ai-engine/test/usernames.txt
+
+# --- python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# --- node / next ---
+node_modules/
+.next/
+out/
+build/
+.vercel
+*.tsbuildinfo
+
+# --- os ---
+.DS_Store

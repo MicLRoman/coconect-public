@@ -1,0 +1,31 @@
+services:
+  ai-engine:
+    build: ./ai-engine
+    restart: unless-stopped
+    env_file: ./ai-engine/.env
+    expose:
+      - "8001"
+
+  web:
+    build: ./web-app
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - ai-engine
+
+volumes:
+  caddy_data:
+  caddy_config:

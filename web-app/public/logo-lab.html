@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>coconect — Logo Lab</title>
+<style>
+  :root{
+    --mint:#a7f3d0; --lavender:#d8b4fe; --lemon:#fde047;
+    --rose:#fb7185; --sky:#7dd3fc; --dark:#111827; --gray:#6b7280;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui,-apple-system,sans-serif;
+    background:#fafafa; color:#111827; display:flex; min-height:100vh;
+  }
+  .panel{
+    width:340px; flex:none; background:#fff; border-right:1px solid #e5e7eb;
+    padding:20px; overflow-y:auto; height:100vh;
+  }
+  .stage{
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:24px; padding:32px; position:relative;
+  }
+  h1{font-size:18px; margin:0 0 4px}
+  .sub{color:var(--gray); font-size:13px; margin:0 0 20px}
+  h2{font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin:22px 0 10px}
+  label{font-size:13px; display:block; margin:10px 0 4px; font-weight:600}
+  input[type=range]{width:100%}
+  input[type=text]{width:100%; padding:8px; border:1px solid #d1d5db; border-radius:8px; font-size:14px}
+  select{width:100%; padding:8px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; background:#fff}
+  .row{display:flex; gap:8px; align-items:center}
+  .swatches{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+  .sw{width:30px; height:30px; border-radius:8px; border:2px solid #e5e7eb; cursor:pointer; position:relative}
+  .sw.active{border-color:#111827; box-shadow:0 0 0 2px #fff,0 0 0 4px #111827}
+  .sw.transp{background:
+    linear-gradient(45deg,#ccc 25%,transparent 25%),
+    linear-gradient(-45deg,#ccc 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#ccc 75%),
+    linear-gradient(-45deg,transparent 75%,#ccc 75%);
+    background-size:10px 10px; background-position:0 0,0 5px,5px -5px,-5px 0;}
+  .glyph-pick{display:flex; gap:6px; margin-bottom:8px}
+  .glyph-pick button{flex:1; padding:6px; border:1px solid #d1d5db; background:#fff; border-radius:8px; cursor:pointer; font-weight:700}
+  .glyph-pick button.active{background:#111827; color:#fff; border-color:#111827}
+  .presets{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .preset{border:1px solid #e5e7eb; border-radius:10px; padding:8px; cursor:pointer; background:#fff; text-align:center}
+  .preset:hover{border-color:#111827}
+  .preset .pv{font-weight:900; font-size:24px; letter-spacing:-2px}
+  .preset .nm{font-size:11px; color:var(--gray); margin-top:2px}
+  .toggle{display:flex; align-items:center; gap:8px; margin:10px 0}
+  .toggle input{width:18px; height:18px}
+  .btn{display:block; width:100%; padding:12px; border:none; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; margin-top:8px}
+  .btn.svg{background:var(--dark); color:#fff}
+  .btn.png{background:var(--lemon); color:#111827}
+  .btn.png2{background:var(--mint); color:#111827}
+  .preview-wrap{
+    background:
+      linear-gradient(45deg,#eee 25%,transparent 25%),
+      linear-gradient(-45deg,#eee 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,#eee 75%),
+      linear-gradient(-45deg,transparent 75%,#eee 75%);
+    background-size:24px 24px; background-position:0 0,0 12px,12px -12px,-12px 0;
+    border-radius:24px; padding:0; box-shadow:0 10px 40px rgba(0,0,0,.08);
+  }
+  #preview{width:420px; height:420px; display:block}
+  .hint{font-size:12px; color:var(--gray); text-align:center; max-width:420px}
+  .colorrow{display:flex; gap:8px; align-items:center; margin-top:8px}
+  .colorrow input[type=color]{width:42px; height:34px; border:1px solid #d1d5db; border-radius:8px; padding:0; background:#fff}
+</style>
+</head>
+<body>
+  <div class="panel">
+    <h1>coconect — Logo Lab</h1>
+    <p class="sub">Покрась символы, убери рамку, экспортируй в SVG/PNG.</p>
+
+    <h2>Текст</h2>
+    <div class="glyph-pick" id="textMode">
+      <button data-text="co:" class="active">co:</button>
+      <button data-text="coconect:">coconect:</button>
+    </div>
+    <input type="text" id="customText" placeholder="свой текст (необязательно)" />
+
+    <h2>Готовые решения</h2>
+    <div class="presets" id="presets"></div>
+
+    <h2>Цвет по символам</h2>
+    <div class="glyph-pick" id="glyphPick"></div>
+    <div class="swatches" id="glyphSwatches"></div>
+    <div class="colorrow">
+      <input type="color" id="customColor" />
+      <span style="font-size:12px;color:var(--gray)">свой цвет для выбранного символа</span>
+    </div>
+
+    <h2>Градиент (фирменный)</h2>
+    <div class="toggle">
+      <input type="checkbox" id="gradOn" />
+      <label for="gradOn" style="margin:0">Залить логотип градиентом</label>
+    </div>
+    <div id="gradOpts" style="display:none">
+      <p style="font-size:12px;color:var(--gray);margin:2px 0 8px">Перекрывает цвета символов — заливает весь логотип целиком.</p>
+      <div class="presets" id="gradPresets"></div>
+      <label>Угол: <span id="angleVal">90</span>°</label>
+      <input type="range" id="gradAngle" min="0" max="360" value="90" />
+      <div class="colorrow">
+        <input type="color" id="gradC1" value="#e11d48" />
+        <input type="color" id="gradC2" value="#f59e0b" />
+        <span style="font-size:12px;color:var(--gray)">свои 2 цвета</span>
+      </div>
+    </div>
+
+    <h2>Фон</h2>
+    <div class="swatches" id="bgSwatches"></div>
+
+    <h2>Рамка</h2>
+    <div class="toggle">
+      <input type="checkbox" id="frameOn" />
+      <label for="frameOn" style="margin:0">Показать рамку</label>
+    </div>
+    <div id="frameOpts" style="display:none">
+      <div class="swatches" id="frameSwatches"></div>
+      <label>Толщина рамки: <span id="strokeVal">12</span></label>
+      <input type="range" id="strokeW" min="0" max="40" value="12" />
+      <label>Скругление: <span id="radiusVal">100</span></label>
+      <input type="range" id="radius" min="0" max="256" value="100" />
+    </div>
+
+    <h2>Шрифт</h2>
+    <label>Размер: <span id="sizeVal">220</span></label>
+    <input type="range" id="fsize" min="80" max="360" value="220" />
+    <label>Жирность: <span id="weightVal">900</span></label>
+    <input type="range" id="fweight" min="100" max="900" step="100" value="900" />
+    <label>Трекинг (letter-spacing): <span id="trackVal">-12</span></label>
+    <input type="range" id="track" min="-30" max="20" value="-12" />
+
+    <h2>Экспорт</h2>
+    <button class="btn svg" id="dlSvg">⬇ Скачать SVG</button>
+    <button class="btn png" id="dlPng">⬇ Скачать PNG 512×512</button>
+    <button class="btn png2" id="dlPng1024">⬇ Скачать PNG 1024×1024</button>
+  </div>
+
+  <div class="stage">
+    <div class="preview-wrap">
+      <div id="preview"></div>
+    </div>
+    <p class="hint">Превью на прозрачном фоне (шахматка = прозрачность). Цвет каждой буквы и двоеточия настраивается отдельно. Двоеточие <code>:</code> рисуется двумя квадратами как в текущем фавиконе.</p>
+  </div>
+
+<script>
+const PALETTE = [
+  {name:'dark',   c:'#111827'},
+  {name:'lemon',  c:'#fde047'},
+  {name:'mint',   c:'#a7f3d0'},
+  {name:'lavender',c:'#d8b4fe'},
+  {name:'rose',   c:'#fb7185'},
+  {name:'sky',    c:'#7dd3fc'},
+  {name:'gray',   c:'#6b7280'},
+  {name:'white',  c:'#ffffff'},
+];
+
+// Состояние
+const state = {
+  text:'co:',
+  glyphColors:{}, // index -> color
+  defaultColor:'#111827',
+  selectedGlyph:0,
+  bg:'transparent',
+  frame:false,
+  frameColor:'#111827',
+  stroke:12,
+  radius:100,
+  size:220,
+  weight:900,
+  track:-12,
+  grad:false,
+  gradStops:['#e11d48','#f59e0b'], // фирменный закат
+  gradAngle:90,
+};
+
+// ---------- SVG генерация ----------
+// Двоеточие рисуем как 2 квадрата (как в фавиконе). Буквы — как <text> tspan.
+function buildSVG(forExport){
+  const VB = 512;
+  const text = state.text;
+  const chars = [...text];
+
+  // фон
+  let bgRect = '';
+  if(state.bg !== 'transparent'){
+    bgRect = `<rect width="${VB}" height="${VB}" fill="${state.bg}"/>`;
+  }
+
+  // рамка
+  let frame = '';
+  if(state.frame){
+    const sw = state.stroke;
+    const m = 24;
+    frame = `<rect x="${m}" y="${m}" width="${VB-2*m}" height="${VB-2*m}" rx="${state.radius}" fill="none" stroke="${state.frameColor}" stroke-width="${sw}"/>`;
+  }
+
+  const esc = (s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  let defs='', textFill='', tspans='';
+  if(state.grad){
+    // угол -> координаты линии градиента в objectBoundingBox
+    const rad = state.gradAngle*Math.PI/180;
+    const x=Math.cos(rad), y=Math.sin(rad);
+    const x1=(0.5-x/2).toFixed(4), y1=(0.5-y/2).toFixed(4);
+    const x2=(0.5+x/2).toFixed(4), y2=(0.5+y/2).toFixed(4);
+    const stops=state.gradStops.map((c,i)=>{
+      const off=state.gradStops.length===1?0:(i/(state.gradStops.length-1)*100);
+      return `<stop offset="${off}%" stop-color="${c}"/>`;
+    }).join('');
+    defs=`<defs><linearGradient id="logoGrad" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${stops}</linearGradient></defs>`;
+    textFill='url(#logoGrad)';
+    tspans=esc(text); // единая заливка градиентом, без пер-символьных цветов
+  } else {
+    chars.forEach((ch,i)=>{
+      const col = state.glyphColors[i] || state.defaultColor;
+      tspans += `<tspan fill="${col}">${esc(ch)}</tspan>`;
+    });
+  }
+
+  const fillAttr = state.grad ? ` fill="${textFill}"` : '';
+  const textEl = `<text x="50%" y="53%"${fillAttr} dominant-baseline="middle" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-weight="${state.weight}" font-size="${state.size}" letter-spacing="${state.track}">${tspans}</text>`;
+
+  const svg = `<svg width="${VB}" height="${VB}" viewBox="0 0 ${VB} ${VB}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  ${defs}
+  ${bgRect}
+  ${frame}
+  ${textEl}
+</svg>`;
+  return svg;
+}
+
+// ---------- Рендер UI ----------
+function makeSwatches(container, current, onPick, withTransparent){
+  container.innerHTML='';
+  if(withTransparent){
+    const t=document.createElement('div');
+    t.className='sw transp'+(current==='transparent'?' active':'');
+    t.title='прозрачный';
+    t.onclick=()=>onPick('transparent');
+    container.appendChild(t);
+  }
+  PALETTE.forEach(p=>{
+    const s=document.createElement('div');
+    s.className='sw'+(current===p.c?' active':'');
+    s.style.background=p.c;
+    s.title=p.name;
+    s.onclick=()=>onPick(p.c);
+    container.appendChild(s);
+  });
+}
+
+function renderGlyphPick(){
+  const wrap=document.getElementById('glyphPick');
+  wrap.innerHTML='';
+  [...state.text].forEach((ch,i)=>{
+    const b=document.createElement('button');
+    b.textContent = ch===' '? '␣' : ch;
+    b.className = (i===state.selectedGlyph?'active':'');
+    b.onclick=()=>{ state.selectedGlyph=i; render(); };
+    wrap.appendChild(b);
+  });
+}
+
+function renderGlyphSwatches(){
+  const cur = state.glyphColors[state.selectedGlyph] || state.defaultColor;
+  makeSwatches(document.getElementById('glyphSwatches'), cur, (c)=>{
+    state.glyphColors[state.selectedGlyph]=c;
+    render();
+  }, false);
+  document.getElementById('customColor').value = /^#([0-9a-f]{6})$/i.test(cur)?cur:'#111827';
+}
+
+// Соло-пресеты на основе реальной палитры приложения (чипы/акценты)
+const PRESETS = [
+  {nm:'Моно (тёмный)', colors:['#111827','#111827','#111827']},
+  {nm:'Лимон точка',   colors:['#111827','#111827','#fde047']},
+  {nm:'Малина точка',  colors:['#111827','#111827','#e11d48']},
+  {nm:'Мята точка',    colors:['#111827','#111827','#a7f3d0']},
+  {nm:'Поп-акцент',    colors:['#fb7185','#7dd3fc','#fde047']},
+  {nm:'Мята+лаванда',  colors:['#a7f3d0','#d8b4fe','#fb7185']},
+  {nm:'Небо+лимон',    colors:['#7dd3fc','#111827','#fde047']},
+  {nm:'Белый (инверт)',colors:['#ffffff','#ffffff','#fde047']},
+];
+
+// Градиент-пресеты строго из фирменных сочетаний в проекте
+const GRAD_PRESETS = [
+  {nm:'Закат (главный)', stops:['#e11d48','#f59e0b']},        // Hero / онбординг
+  {nm:'Малина→Лимон',    stops:['#e11d48','#fde047']},        // заголовок онбординга
+  {nm:'Огонь',           stops:['#fb7185','#ea580c','#fde047']}, // блобы фида
+  {nm:'Закат полный',    stops:['#e11d48','#ea580c','#fde047']},
+  {nm:'Лимон→Мята',      stops:['#fde047','#a7f3d0']},
+  {nm:'Небо→Лаванда',    stops:['#7dd3fc','#d8b4fe']},
+  {nm:'Мята→Небо',       stops:['#a7f3d0','#7dd3fc']},
+  {nm:'Роза→Лаванда',    stops:['#fb7185','#d8b4fe']},
+];
+
+function gradCss(stops){ return `linear-gradient(90deg,${stops.join(',')})`; }
+
+function renderGradPresets(){
+  const wrap=document.getElementById('gradPresets');
+  wrap.innerHTML='';
+  GRAD_PRESETS.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='preset';
+    d.innerHTML=`<div class="pv" style="background:${gradCss(p.stops)};-webkit-background-clip:text;background-clip:text;color:transparent">co:</div><div class="nm">${p.nm}</div>`;
+    d.onclick=()=>{
+      state.grad=true;
+      document.getElementById('gradOn').checked=true;
+      state.gradStops=p.stops.slice();
+      document.getElementById('gradC1').value=p.stops[0];
+      document.getElementById('gradC2').value=p.stops[p.stops.length-1];
+      render();
+    };
+    wrap.appendChild(d);
+  });
+}
+
+function renderPresets(){
+  const wrap=document.getElementById('presets');
+  wrap.innerHTML='';
+  PRESETS.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='preset';
+    const bg = p.colors.includes('#ffffff')? '#111827':'#fff';
+    d.style.background=bg;
+    d.innerHTML=`<div class="pv"><span style="color:${p.colors[0]}">c</span><span style="color:${p.colors[1]}">o</span><span style="color:${p.colors[2]}">:</span></div><div class="nm" style="color:${bg==='#111827'?'#9ca3af':''}">${p.nm}</div>`;
+    d.onclick=()=>{
+      // применяем по позициям c,o,: -> к первой, предпоследней? Применим к c,o и последнему символу(:)
+      const chars=[...state.text];
+      state.glyphColors={};
+      // первая буква
+      state.glyphColors[0]=p.colors[0];
+      // средние буквы цветом o
+      for(let i=1;i<chars.length-1;i++) state.glyphColors[i]=p.colors[1];
+      // последний символ (двоеточие)
+      state.glyphColors[chars.length-1]=p.colors[2];
+      render();
+    };
+    wrap.appendChild(d);
+  });
+}
+
+function render(){
+  // превью
+  document.getElementById('preview').innerHTML = buildSVG(false);
+  renderGlyphPick();
+  renderGlyphSwatches();
+  // значения слайдеров
+  document.getElementById('sizeVal').textContent=state.size;
+  document.getElementById('weightVal').textContent=state.weight;
+  document.getElementById('trackVal').textContent=state.track;
+  document.getElementById('strokeVal').textContent=state.stroke;
+  document.getElementById('radiusVal').textContent=state.radius;
+  document.getElementById('frameOpts').style.display=state.frame?'block':'none';
+  document.getElementById('gradOpts').style.display=state.grad?'block':'none';
+  document.getElementById('angleVal').textContent=state.gradAngle;
+}
+
+// ---------- Экспорт ----------
+function download(filename, dataUrl){
+  const a=document.createElement('a');
+  a.href=dataUrl; a.download=filename; a.click();
+}
+
+function exportSVG(){
+  const svg=buildSVG(true);
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  download('coconect-logo.svg', url);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportPNG(size){
+  const svg=buildSVG(true);
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const img=new Image();
+  img.onload=()=>{
+    const canvas=document.createElement('canvas');
+    canvas.width=size; canvas.height=size;
+    const ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0,size,size);
+    URL.revokeObjectURL(url);
+    download(`coconect-logo-${size}.png`, canvas.toDataURL('image/png'));
+  };
+  img.src=url;
+}
+
+// ---------- Слушатели ----------
+document.querySelectorAll('#textMode button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('#textMode button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    state.text=b.dataset.text;
+    state.glyphColors={};
+    state.selectedGlyph=0;
+    document.getElementById('customText').value='';
+    render();
+  };
+});
+document.getElementById('customText').oninput=(e)=>{
+  const v=e.target.value;
+  if(v){ state.text=v; state.glyphColors={}; state.selectedGlyph=0; }
+  else { state.text='co:'; }
+  render();
+};
+document.getElementById('customColor').oninput=(e)=>{
+  state.glyphColors[state.selectedGlyph]=e.target.value;
+  render();
+};
+document.getElementById('gradOn').onchange=(e)=>{ state.grad=e.target.checked; render(); };
+document.getElementById('gradAngle').oninput=(e)=>{ state.gradAngle=+e.target.value; render(); };
+document.getElementById('gradC1').oninput=(e)=>{ state.gradStops=[e.target.value, document.getElementById('gradC2').value]; render(); };
+document.getElementById('gradC2').oninput=(e)=>{ state.gradStops=[document.getElementById('gradC1').value, e.target.value]; render(); };
+document.getElementById('frameOn').onchange=(e)=>{ state.frame=e.target.checked; render(); };
+document.getElementById('strokeW').oninput=(e)=>{ state.stroke=+e.target.value; render(); };
+document.getElementById('radius').oninput=(e)=>{ state.radius=+e.target.value; render(); };
+document.getElementById('fsize').oninput=(e)=>{ state.size=+e.target.value; render(); };
+document.getElementById('fweight').oninput=(e)=>{ state.weight=+e.target.value; render(); };
+document.getElementById('track').oninput=(e)=>{ state.track=+e.target.value; render(); };
+document.getElementById('dlSvg').onclick=exportSVG;
+document.getElementById('dlPng').onclick=()=>exportPNG(512);
+document.getElementById('dlPng1024').onclick=()=>exportPNG(1024);
+
+// init
+makeSwatches(document.getElementById('bgSwatches'), state.bg, (c)=>{ state.bg=c; render(); }, true);
+makeSwatches(document.getElementById('frameSwatches'), state.frameColor, (c)=>{ state.frameColor=c; render(); }, false);
+renderPresets();
+renderGradPresets();
+render();
+</script>
+</body>
+</html>

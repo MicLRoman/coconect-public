@@ -1,0 +1,10 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="90"/></filter>
+  </defs>
+  <rect width="1200" height="630" fill="#fafafa"/>
+  <circle cx="120" cy="120" r="280" fill="#fde047" fill-opacity="0.35" filter="url(#b)"/>
+  <circle cx="1080" cy="500" r="240" fill="#e11d48" fill-opacity="0.20" filter="url(#b)"/>
+  <text x="600" y="300" dominant-baseline="middle" text-anchor="middle" fill="#111827" font-family="system-ui,-apple-system,Segoe UI,Arial,sans-serif" font-weight="900" font-size="150" letter-spacing="-8">coconect<tspan fill="#e11d48">:</tspan></text>
+  <text x="600" y="400" dominant-baseline="middle" text-anchor="middle" fill="#6B7280" font-family="system-ui,Arial,sans-serif" font-weight="700" font-size="26" letter-spacing="6">STOP NETWORKING. START BUILDING.</text>
+</svg>

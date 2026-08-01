@@ -1,0 +1,18 @@
+{
+	email admin@example.com   # ← ваш email для Let's Encrypt
+}
+
+# www → апекс (канонический редирект, чтобы был серт и не было ERR_SSL)
+www.coconect.io {
+	redir https://coconect.io{uri} permanent
+}
+
+# Фронт (Next.js)
+coconect.io {
+	reverse_proxy web:3000
+}
+
+# Бэк (FastAPI: webhook + API)
+api.coconect.io {
+	reverse_proxy ai-engine:8001
+}

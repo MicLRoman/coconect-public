@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+.git/
+test/cache/
+scraper/last_linkedin.json

@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Pop-art palette — soft pastels on hard black outlines */
+  --color-pop-mint: #a7f3d0;
+  --color-pop-lavender: #d8b4fe;
+  --color-pop-lemon: #fde047;
+  --color-pop-rose: #fb7185;
+  --color-pop-sky: #7dd3fc;
+  --color-pop-dark: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #fafafa;
+    --foreground: #111827;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select { color: #000000 !important; }
+input::placeholder, textarea::placeholder { color: #6b7280 !important; }
+
+/* Smooth touch interactions */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent zoom on input focus on iOS */
+@media screen and (max-width: 640px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Better scrollbar hiding utility */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Active states for mobile touch feedback */
+@media (hover: none) {
+  button:active, [role="button"]:active {
+    opacity: 0.85;
+    transition: opacity 0.1s;
+  }
+}
+
+/* ============================================================
+   Enter/exit animation utilities (self-contained — replaces the
+   missing tailwindcss-animate plugin). Honors duration-* via
+   --tw-duration when present.
+   ============================================================ */
+@keyframes tablr-enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-x, 0), var(--tw-enter-y, 0), 0)
+               scale3d(var(--tw-enter-s, 1), var(--tw-enter-s, 1), 1);
+  }
+}
+@keyframes tablr-exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-x, 0), var(--tw-exit-y, 0), 0)
+               scale3d(var(--tw-exit-s, 1), var(--tw-exit-s, 1), 1);
+  }
+}
+
+.animate-in  { animation: tablr-enter var(--tw-duration, 0.3s) cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-out { animation: tablr-exit  var(--tw-duration, 0.2s) ease-in both; }
+
+.fade-in  { --tw-enter-opacity: 0; }
+.fade-out { --tw-exit-opacity: 0; }
+.zoom-in-95 { --tw-enter-s: 0.95; }
+
+.slide-in-from-right-4  { --tw-enter-x: 1rem; }
+.slide-in-from-top-4    { --tw-enter-y: -1rem; }
+.slide-in-from-top-2    { --tw-enter-y: -0.5rem; }
+.slide-in-from-bottom-4 { --tw-enter-y: 1rem; }
+.slide-in-from-bottom-2 { --tw-enter-y: 0.5rem; }
+.slide-out-to-bottom-4  { --tw-exit-y: 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-in, .animate-out { animation: none !important; }
+}
+
+/* ============================================================
+   Pop-art motion — gentle floating stickers + peel-on-hover.
+   ============================================================ */
+@keyframes pop-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-4px) rotate(2deg); }
+}
+.animate-pop-float { animation: pop-float 4s ease-in-out infinite; }
+
+@keyframes pop-peel {
+  0%   { transform: scale(1) rotate(0deg); }
+  50%  { transform: scale(1.04) rotate(-1.5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.hover-sticker:hover { animation: pop-peel 0.4s ease-out forwards; }
+
+/* Slow drifting gradient blobs (animated feed background) */
+.gblob { animation: gblob-drift 20s ease-in-out infinite; will-change: transform; }
+@keyframes gblob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(7%, -9%) scale(1.12); }
+  66%      { transform: translate(-9%, 7%) scale(0.92); }
+}
+
+/* Floating chat-bubble + typing dots (icebreakers banner) */
+.animate-fly { animation: fly 3s ease-in-out infinite; }
+@keyframes fly { 0%, 100% { transform: translateY(0) rotate(6deg); } 50% { transform: translateY(-8px) rotate(8deg); } }
+.typing-dot { animation: typing 1.4s infinite ease-in-out both; }
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dot:nth-child(3) { animation-delay: 0s; }
+@keyframes typing { 0%, 80%, 100% { transform: scale(0.6) translateY(0); opacity: 0.4; } 40% { transform: scale(1) translateY(-4px); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pop-float, .hover-sticker:hover, .gblob, .animate-fly, .typing-dot { animation: none !important; }
+}
+
+/* ============================================================
+   Landing-page keyframes (moved out of app/page.tsx so the
+   landing can render as a Server Component). `landing-typing`
+   is namespaced to avoid colliding with the feed `typing`.
+   ============================================================ */
+@keyframes float1 { 0%, 100% { transform: translateY(0) translate(-50%, -50%); } 50% { transform: translateY(-10px) translate(-50%, -50%); } }
+@keyframes float2 { 0%, 100% { transform: translateY(0) translate(-50%, -50%); } 50% { transform: translateY(-8px) translate(-46%, -50%); } }
+@keyframes float3 { 0%, 100% { transform: translateY(0) translate(-50%, -50%); } 50% { transform: translateY(8px) translate(-54%, -50%); } }
+@keyframes dash { to { stroke-dashoffset: -1000; } }
+@keyframes landing-typing { from { width: 0 } to { width: 100% } }
+@keyframes blink { 50% { border-color: transparent } }
+@keyframes swipeRight { from { transform: translateX(-100%) } to { transform: translateX(100%) } }
+@keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+
+/* ============================================================
+   Off-screen animation pause. A single IntersectionObserver
+   (AnimationPauser) toggles `.anim-paused` on heavy sections
+   (opted in with `data-anim`) when they scroll out of view, so the
+   marquee, hero glow, float loops, etc. stop eating the compositor
+   while nobody is looking at them. Pure perf — no visual change.
+   ============================================================ */
+.anim-paused,
+.anim-paused *,
+.anim-paused *::before,
+.anim-paused *::after {
+  animation-play-state: paused !important;
+}
+
+/* Respect users who ask for less motion: neutralize every always-running
+   loop (marquees, typing, floats, sequenced UI) and smooth scrolling.
+   Broad wildcard so it also covers inline-<style> keyframes in components. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   LandingAbout animations (moved out of the component's inline
+   <style> so they ship once in the cached stylesheet instead of in
+   the streamed HTML on every request).
+   ============================================================ */
+@keyframes modFloat1 { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-5px) rotate(0deg); } }
+@keyframes modFloat2 { 0%, 100% { transform: translateY(0) rotate(1deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
+@keyframes modFloat3 { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-4px) rotate(-2deg); } }
+.animate-mod-1 { animation: modFloat1 4s ease-in-out infinite; }
+.animate-mod-2 { animation: modFloat2 5s ease-in-out infinite; }
+.animate-mod-3 { animation: modFloat3 4.5s ease-in-out infinite; }
+
+@keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.animate-cursor { animation: cursor-blink 0.8s step-end infinite; }
+
+@keyframes drawCross1Loop { 0%, 10% { stroke-dashoffset: 30; } 20%, 85% { stroke-dashoffset: 0; } 95%, 100% { stroke-dashoffset: 30; } }
+@keyframes drawCross2Loop { 0%, 20% { stroke-dashoffset: 30; } 30%, 85% { stroke-dashoffset: 0; } 95%, 100% { stroke-dashoffset: 30; } }
+.animate-draw-cross-1 { animation: drawCross1Loop 5s ease-in-out infinite; }
+.animate-draw-cross-2 { animation: drawCross2Loop 5s ease-in-out infinite; }
+
+/* ============================================================
+   HowItWorks step-mockup animations (moved out of the component's
+   inline <style> for the same reason).
+   ============================================================ */
+@keyframes seq-typing { 0%, 20% { opacity: 0; transform: translateY(10px); } 25%, 85% { opacity: 1; transform: translateY(0); } 90%, 100% { opacity: 0; transform: translateY(10px); } }
+@keyframes seq-user-reply { 0%, 45% { opacity: 0; transform: translateY(10px); } 50%, 85% { opacity: 1; transform: translateY(0); } 90%, 100% { opacity: 0; transform: translateY(10px); } }
+.animate-seq-typing { animation: seq-typing 6s infinite; }
+.animate-seq-user-reply { animation: seq-user-reply 6s infinite; }
+
+@keyframes wa-msg-1 { 0%, 15% { opacity: 0; transform: translateX(-10px); } 20%, 85% { opacity: 1; transform: translateX(0); } 90%, 100% { opacity: 0; transform: translateX(-10px); } }
+@keyframes wa-msg-2 { 0%, 40% { opacity: 0; transform: translateX(10px); } 45%, 85% { opacity: 1; transform: translateX(0); } 90%, 100% { opacity: 0; transform: translateX(10px); } }
+@keyframes wa-msg-3 { 0%, 65% { opacity: 0; transform: translateX(-10px); } 70%, 85% { opacity: 1; transform: translateX(0); } 90%, 100% { opacity: 0; transform: translateX(-10px); } }
+.animate-wa-1 { animation: wa-msg-1 8s infinite; }
+.animate-wa-2 { animation: wa-msg-2 8s infinite; }
+.animate-wa-3 { animation: wa-msg-3 8s infinite; }
+
+@keyframes cluster-move-1 { 0%, 10% { transform: translate(0, 0); } 40%, 100% { transform: translate(30px, 20px); } }
+@keyframes cluster-move-2 { 0%, 10% { transform: translate(0, 0); } 40%, 100% { transform: translate(-25px, 15px); } }
+@keyframes cluster-move-3 { 0%, 10% { transform: translate(0, 0); } 40%, 100% { transform: translate(-10px, -20px); } }
+.animate-cluster-1 { animation: cluster-move-1 3s ease-out infinite alternate; }
+.animate-cluster-2 { animation: cluster-move-2 3s ease-out infinite alternate; }
+.animate-cluster-3 { animation: cluster-move-3 3s ease-out infinite alternate; }
+
+/* ============================================================
+   Hero «Text me» (вариант B): пока кнопка активна (её шаг в цикле
+   флоучарта или hover) — она мягко «дышит». Появление/исчезание
+   сообщения под ней рулит React-состоянием через CSS transition.
+   ============================================================ */
+@keyframes hero-btn-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-5px) scale(1.02); }
+}
