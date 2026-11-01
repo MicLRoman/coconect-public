@@ -1,0 +1,14 @@
+# Scraped media and generated reports — never commit
+storage/
+results/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local session / cookies
+session.json
+cookies.json
+*.pkl

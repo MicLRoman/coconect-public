@@ -1,0 +1,24 @@
+# Core
+pandas
+numpy
+requests
+colorama
+
+# Instagram scraping
+selenium
+webdriver-manager
+instaloader
+
+# Computer vision + OCR
+opencv-python
+pytesseract
+
+# Visualization
+matplotlib
+seaborn
+
+# Optional — enable extra signals if installed
+# moviepy        # audio extraction from video
+# shazamio       # music/track identification
+# deepface       # face / emotion detection
+# scenedetect    # scene-cut detection
